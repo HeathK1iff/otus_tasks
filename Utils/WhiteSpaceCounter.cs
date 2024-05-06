@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace otus_tasks.Utils;
 
@@ -9,7 +10,7 @@ public static class WhiteSpaceCounter
     public static int CountInFolder(string path)
     {
         ConcurrentBag<int> intBags = new ConcurrentBag<int>();
-        var s = Parallel.ForEach<string>(Directory.GetFiles(path), fileName =>
+        Parallel.ForEach<string>(Directory.GetFiles(path), fileName =>
         {
             intBags.Add(CountInFile(fileName));
         });
@@ -35,7 +36,9 @@ public static class WhiteSpaceCounter
     {
         using (var file = new FileStream(path, FileMode.Open, FileAccess.Read))
         {
-            return Count(file);
+            int count = Count(file);
+            Debug.WriteLine($"Whitespace count for {path} : {count}");
+            return count;
         }
     }
     #endregion
@@ -60,7 +63,6 @@ public static class WhiteSpaceCounter
             {
                 count += buffer.Count(f => char.IsWhiteSpace(f));
             }
-
             return count;
         }
     }
